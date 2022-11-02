@@ -42,6 +42,8 @@ class User
   function __construct(int $id, string $name = '', string $surname = '',
     DateTime $dateOfBirth = null, int $gender = 0, string $cityBirth = ''
   ) {
+    $regexNumbers = "/[0-9]+/u";
+
     $query = $GLOBALS['pdo']->prepare("SELECT * FROM `users` WHERE `id` = :id");
     $query->execute(array(
       'id' => $id,
@@ -66,15 +68,23 @@ class User
       die('Ошибка пол должен быть 0 или 1');
     }
 
-    if (empty($name)) {
-      die('Поле Имя не может быть пустым');
+    if (empty(trim($name))) {
+      die('Поле имя не может быть пустым');
+    }
+    
+    if (preg_match($regexNumbers, $name)) {
+      die('Поле имя может содержать только буквы');
     }
 
-    if (empty($surname)) {
+    if (empty(trim($surname))) {
       die('Поле фамилия не может быть пустым');
     }
 
-    if (empty($cityBirth)) {
+    if (preg_match($regexNumbers, $surname)) {
+      die('Поле фамилия может содержать только буквы');
+    }
+
+    if (empty(trim($cityBirth))) {
       die('Поле город рождения не может быть пустым');
     }
 
